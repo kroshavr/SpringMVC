@@ -15,4 +15,5 @@ public interface EmployeeService {
     public Optional<Employee> employeeSalaryMax();
 
     public List<Employee> employeeHighSalary();
+
 }
