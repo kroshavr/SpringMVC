@@ -16,4 +16,12 @@ public interface EmployeeService {
 
     public List<Employee> employeeHighSalary();
 
+    abstract Optional<Employee> getEmployeeById(int id);
+    void addEmployee(List<Employee> employees);
+
+    void editEmployee(int id, Employee newEmployee);
+
+    String deleteEmployeeById(int id);
+
+    String getEmployeesWithSalaryHigherThan(int compareSalary);
 }

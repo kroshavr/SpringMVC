@@ -1,6 +1,7 @@
 package ru.skypro.lessons.springboot.weblibrary.service;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.skypro.lessons.springboot.weblibrary.pojo.Employee;
 import ru.skypro.lessons.springboot.weblibrary.repository.EmployeeRepository;
@@ -54,6 +55,36 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
         return high;
+    }
+
+    @Override
+    public Optional<Employee> getEmployeeById(int id) {
+        return employeeRepository.getAllEmployees().stream()
+                .filter(employee -> employee.getId() == id)
+                .findFirst();
+    }
+    @Override
+    public void addEmployee(List<Employee> employees) {
+        employeeRepository.addEmployee(employees);
+    }
+
+    @Override
+    public void editEmployee(int id, Employee newEmployee) {
+        employeeRepository.editEmployee(getEmployeeById(id).orElse(null), newEmployee);
+    }
+
+    @Override
+    public String deleteEmployeeById(int id) {
+        employeeRepository.getAllEmployees().removeIf(employee -> employee.getId() == id);
+        return "Сотрудник c id = " + id + " успешно удален из базы данных";
+    }
+
+    @Override
+    public String getEmployeesWithSalaryHigherThan(int compareSalary) {
+        List<Employee> employeeHighSalary = employeeRepository.getAllEmployees().stream()
+                .filter(employee -> employee.getSalary() > compareSalary)
+                .toList();
+        return "Сотрудники с зарплатой выше " + compareSalary + ": " + employeeHighSalary;
     }
 
 }

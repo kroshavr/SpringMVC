@@ -1,7 +1,6 @@
 package ru.skypro.lessons.springboot.weblibrary.repository;
 
 import ru.skypro.lessons.springboot.weblibrary.pojo.Employee;
-import ru.skypro.lessons.springboot.weblibrary.repository.EmployeeRepository;
 
 import java.util.List;
 
@@ -15,6 +14,16 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Override
     public List<Employee> getAllEmployees() {
         return employeeList;
+    }
+
+    @Override
+    public void addEmployee(List<Employee> employees) {
+
+    }
+
+    @Override
+    public void editEmployee(Employee id, Employee employee) {
+
     }
 
 }
