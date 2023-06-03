@@ -32,14 +32,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Optional<Employee> employeeSalaryMin() {
         Optional<Employee> min = employeeRepository.getAllEmployees().stream()
                 .min(Comparator.comparing(Employee::getSalary));
-        return min;
+        return Optional.ofNullable(min.orElse(null));
     }
 
     @Override
     public Optional<Employee> employeeSalaryMax() {
         Optional<Employee> max = employeeRepository.getAllEmployees().stream()
                 .max(Comparator.comparing(Employee::getSalary));
-        return max;
+        return Optional.ofNullable(max.orElse(null));
     }
 
     @Override

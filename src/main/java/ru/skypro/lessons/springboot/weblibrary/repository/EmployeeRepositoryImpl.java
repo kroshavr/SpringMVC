@@ -2,6 +2,7 @@ package ru.skypro.lessons.springboot.weblibrary.repository;
 
 import ru.skypro.lessons.springboot.weblibrary.pojo.Employee;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeRepositoryImpl implements EmployeeRepository {
@@ -18,12 +19,13 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public void addEmployee(List<Employee> employees) {
-
+        List<Employee> employeesBase = new ArrayList<>(employeeList);
+        employeesBase.addAll(employees);
     }
 
     @Override
     public void editEmployee(Employee id, Employee employee) {
-
+        id.setName(employee.getName());
+        id.setSalary(employee.getSalary());
     }
-
 }
