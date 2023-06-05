@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.skypro.lessons.springboot.weblibrary.pojo.Employee;
 
 import java.util.List;
-@Repository
+
 public interface EmployeeRepository {
     public List<Employee> getAllEmployees();
 

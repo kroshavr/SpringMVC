@@ -1,16 +1,17 @@
 package ru.skypro.lessons.springboot.weblibrary.repository;
 
+import org.springframework.stereotype.Repository;
 import ru.skypro.lessons.springboot.weblibrary.pojo.Employee;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Repository
 public class EmployeeRepositoryImpl implements EmployeeRepository {
-    private final List<Employee> employeeList = List.of(
-            new Employee("Катя", 90000),
-            new Employee("Дима", 102000),
-            new Employee("Олег", 80000),
-            new Employee("Вика", 165000));
+        private final List<Employee> employeeList = List.of(
+            new Employee(1,"Катя", 90000),
+            new Employee(2,"Дима", 102000),
+            new Employee(3,"Олег", 80000),
+            new Employee(4,"Вика", 165000));
 
     @Override
     public List<Employee> getAllEmployees() {
