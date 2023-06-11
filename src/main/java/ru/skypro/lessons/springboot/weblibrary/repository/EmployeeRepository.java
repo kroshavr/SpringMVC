@@ -8,11 +8,14 @@ import ru.skypro.lessons.springboot.weblibrary.DTO.EmployeeDTO;
 import ru.skypro.lessons.springboot.weblibrary.entity.Employee;
 
 import java.util.List;
-
-public interface EmployeeRepository extends CrudRepository {
+public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
     @Query(value = "SELECT * FROM employee",
             nativeQuery = true)
     List<Employee> getAllEmployees();
+
+    void addEmployee(List<EmployeeDTO> employees);
+
+    void editEmployee(EmployeeDTO id, EmployeeDTO employee);
 
     @Query (value = "SELECT * FROM employee INNER JOIN position" +
             "ON employee.position_id=position.name " +

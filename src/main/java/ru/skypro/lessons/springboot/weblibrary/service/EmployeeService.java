@@ -1,16 +1,20 @@
 package ru.skypro.lessons.springboot.weblibrary.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import ru.skypro.lessons.springboot.weblibrary.DTO.EmployeeDTO;
 import ru.skypro.lessons.springboot.weblibrary.entity.Employee;
 
+import javax.annotation.Resource;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeService {
     List<EmployeeDTO> getAllEmployees();
 
-    abstract Optional<EmployeeDTO> getEmployeeById(int id);
+    Optional<Employee> getEmployeeById(int id);
     void addEmployee(List<EmployeeDTO> employees);
 
     void editEmployee(EmployeeDTO employeeDTO);
@@ -26,4 +30,8 @@ public interface EmployeeService {
     EmployeeDTO getEmployeeFullInfo(int id);
 
     Page <EmployeeDTO> getEmployeesByPage(int page);
+
+    int createReport() throws IOException;
+
+    ResponseEntity<Resource> downloadFileById(int id) throws FileNotFoundException;
 }
