@@ -2,20 +2,18 @@ package ru.skypro.lessons.springboot.weblibrary.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.skypro.lessons.springboot.weblibrary.entity.Report;
 
-import javax.persistence.*;
 @Getter
 @Setter
 
-public class ReportDTO extends Report {
+public class ReportDTO {
 
-    int id;
-    String departmentName;
-    int employeesQuantity;
-    int maxSalary;
-    int minSalary;
-    double avgSalary;
+    private int id;
+    private String departmentName;
+    private int employeesQuantity;
+    private int maxSalary;
+    private int minSalary;
+    private double avgSalary;
 
     public ReportDTO(String departmentName, int employeesQuantity, int maxSalary, int minSalary, double avgSalary) {
         this.departmentName = departmentName;
@@ -26,6 +24,5 @@ public class ReportDTO extends Report {
     }
 
     public ReportDTO() {
-
     }
 }

@@ -1,4 +1,5 @@
 package ru.skypro.lessons.springboot.weblibrary.service;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -8,16 +9,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.lessons.springboot.weblibrary.DTO.EmployeeDTO;
 import ru.skypro.lessons.springboot.weblibrary.entity.Employee;
 import ru.skypro.lessons.springboot.weblibrary.DTO.ReportDTO;
+import ru.skypro.lessons.springboot.weblibrary.entity.Position;
 import ru.skypro.lessons.springboot.weblibrary.entity.Report;
 import ru.skypro.lessons.springboot.weblibrary.repository.EmployeeRepository;
 import ru.skypro.lessons.springboot.weblibrary.repository.ReportRepository;
 
-import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,32 +30,41 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final ReportRepository reportRepository;
+    private final ObjectMapper objectMapper;
 
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, ReportRepository reportRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, ReportRepository reportRepository, ObjectMapper objectMapper) {
         this.employeeRepository = employeeRepository;
         this.reportRepository = reportRepository;
+        this.objectMapper = objectMapper;
     }
-
     public List<EmployeeDTO> getAllEmployees() {
         List<Employee> employees = employeeRepository.getAllEmployees();
         return employees.stream()
                 .map(EmployeeDTO ::fromEmployee)
                 .collect(Collectors.toList());
     }
-
     @Override
-    public Optional<Employee> getEmployeeById(int id) {
-        return employeeRepository.findById(id);
+    public Optional<EmployeeDTO> getEmployeeById(int id) throws Exception {
+        return Optional.ofNullable(employeeRepository.findById(id).stream()
+                .map(EmployeeDTO::fromEmployee)
+                .findAny().orElseThrow(Exception::new));
     }
     @Override
-    public void addEmployee(List<EmployeeDTO> employees) {
-        employeeRepository.save(new Employee());
+    public void addEmployee(List<EmployeeDTO> employeeDTO) {
+            List<Employee> employees = employeeDTO.stream()
+                    .map(EmployeeDTO::toEmployee)
+                    .toList();
+            employeeRepository.saveAll(employees);
     }
 
     @Override
-    public void editEmployee(EmployeeDTO employeeDTO) {
-        employeeRepository.save(new Employee());
+    public void editEmployee(int id, Employee updatedEmployee) throws Exception {
+        Employee employee = employeeRepository.findById(id).orElseThrow(Exception::new);
+        employee.setName(updatedEmployee.getName());
+        employee.setSalary(updatedEmployee.getSalary());
+        employee.setPosition(new Position(updatedEmployee.getPosition().getId(), updatedEmployee.getPosition().getName()));
+        employeeRepository.save(employee);
     }
 
     @Override
@@ -91,7 +104,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO getEmployeeFullInfo(int id) {
-        Employee employee = (Employee) employeeRepository.findById(id).orElseThrow();
+        Employee employee = employeeRepository.findById(id).orElseThrow();
         return EmployeeDTO.fromEmployee(employee);
     }
 
@@ -103,9 +116,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public void uploadFile(MultipartFile file) throws IOException {
+        InputStream inputStream = file.getInputStream();
+        int streamSize = inputStream.available();
+        byte[] bytes = new byte[streamSize];
+        inputStream.read(bytes);
+        String json = new String(bytes, StandardCharsets.UTF_8);
+        List<Employee> employees = objectMapper.readValue(json, new TypeReference<>(){});
+        employeeRepository.saveAll(employees);
+    }
+
+    @Override
     public int createReport() throws IOException {
         List<ReportDTO> reportEntries = reportRepository.getReport();
-        ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(reportEntries);
         Report report = new Report(json);
         reportRepository.save(report);
@@ -113,10 +136,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResponseEntity<Resource> downloadFileById(int id) throws FileNotFoundException {
+    public ResponseEntity<ByteArrayResource> downloadFileById(int id) throws FileNotFoundException {
         Report report = reportRepository.findById(id).orElseThrow(FileNotFoundException::new);
         String json = report.getJson();
-        Resource resource = (Resource) new ByteArrayResource(json.getBytes());
+        ByteArrayResource resource =  new ByteArrayResource(json.getBytes());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report.json\"")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
