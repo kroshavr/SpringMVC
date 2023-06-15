@@ -4,12 +4,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import ru.skypro.lessons.springboot.weblibrary.DTO.EmployeeDTO;
 import ru.skypro.lessons.springboot.weblibrary.entity.Employee;
 
 import java.util.List;
-
-public interface EmployeeRepository extends CrudRepository {
+public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
     @Query(value = "SELECT * FROM employee",
             nativeQuery = true)
     List<Employee> getAllEmployees();
@@ -25,6 +23,5 @@ public interface EmployeeRepository extends CrudRepository {
             "FROM employee)",
             nativeQuery = true)
     List<Employee> getEmployeesWithHighestSalary();
-
     Page<Employee> findAll(Pageable pageable);
 }
